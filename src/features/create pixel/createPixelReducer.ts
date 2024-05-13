@@ -1,4 +1,9 @@
-import { CAPI_STATUS, PIXEL_ID, PIXEL_NAME } from "./actionTypes";
+import {
+  CAPI_STATUS,
+  PIXEL_ID,
+  PIXEL_NAME,
+  SELECTED_PAGES,
+} from "./actionTypes";
 
 type initialStateProps = {
   pixelName: string;
@@ -16,7 +21,7 @@ export const initialState = {
 
 type CreatePixelReducerActionProp<T> = {
   type: string;
-  payload: T;
+  payload?: T;
 };
 
 export const createPixelReducer = <T>(
@@ -24,7 +29,6 @@ export const createPixelReducer = <T>(
   action: CreatePixelReducerActionProp<T>
 ) => {
   const { type, payload } = action;
-  console.log("✨ ~ action:", action);
   switch (type) {
     case PIXEL_NAME:
       return {
@@ -37,10 +41,25 @@ export const createPixelReducer = <T>(
         ...state,
         pixelID: payload,
       };
+
     case CAPI_STATUS:
       return {
         ...state,
         capiStatus: !state?.capiStatus,
+      };
+
+    case SELECTED_PAGES:
+      if (state?.selectedPages?.includes(payload)) {
+        return {
+          ...state,
+          selectedPages: state?.selectedPages?.filter(
+            (page) => page !== payload
+          ),
+        };
+      }
+      return {
+        ...state,
+        selectedPages: [...state.selectedPages, payload],
       };
 
     default:

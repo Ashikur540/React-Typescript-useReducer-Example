@@ -14,6 +14,7 @@ import CapiStatusToggleSwitch from "@/components/ui/CapiStatusToggleSwitch";
 import {
   changePixelID,
   changePixelName,
+  selectPagesHandler,
 } from "@/features/create pixel/actions";
 import {
   createPixelReducer,
@@ -22,18 +23,13 @@ import {
 
 const CreatePixel = () => {
   const [state, dispatch] = useReducer(createPixelReducer, initialState);
-  const { pixelName, pixelID } = state || {};
-  const [capiActive, setCapiActive] = useState(false);
-  const [value, setValue] = useState("all pages");
+  const [showPagesOptions, setShowPagesOptions] = useState(false);
+  const [selectPagesChecked, setSelectPagesChecked] = useState("all pages");
 
-  const handleChange = useCallback(
-    (_: boolean, newValue: string) => setValue(newValue),
-    []
-  );
+  const { pixelName, pixelID, selectedPages } = state || {};
 
-  const [checked, setChecked] = useState(false);
-  const handleCheck = useCallback(
-    (newChecked: boolean) => setChecked(newChecked),
+  const handleSelectPagesChecked = useCallback(
+    (_: boolean, newValue: string) => setSelectPagesChecked(newValue),
     []
   );
 
@@ -45,13 +41,31 @@ const CreatePixel = () => {
     dispatch(changePixelID(newValue));
   }, []);
 
+  const handleSelectPageOptions = useCallback((newValue: string) => {
+    dispatch(selectPagesHandler(newValue));
+  }, []);
+
   useEffect(() => {
-    console.log({
-      state,
-    });
+    console.log("✨ ~ CreatePixel ~ state:", state);
   }, [state]);
+
+  useEffect(() => {
+    if (selectPagesChecked === "specific pages") {
+      setShowPagesOptions(true);
+    }
+  }, [selectPagesChecked]);
+
+  const handleCreatePixel = () => {
+    localStorage.setItem("pixee-pixel", JSON.stringify(state));
+  };
+
   return (
-    <Page>
+    <Page
+      primaryAction={{
+        content: "Save",
+        onAction: handleCreatePixel,
+      }}
+    >
       <Layout sectioned>
         <Layout.AnnotatedSection
           id="pixel-name"
@@ -98,61 +112,65 @@ const CreatePixel = () => {
         <Layout.AnnotatedSection
           id="conversion-api"
           title="Conversion API (IOS 14+ Solution)"
-          description="Enter your pixel ID here"
+          description="Activate Conversion API to track events from the server side, bypassing browser limits, ad-blockers, and without relying on thank you page"
         >
           <Card>
             <FormLayout>
-              <CapiStatusToggleSwitch
-                capiActive={capiActive}
-                setCapiActive={setCapiActive}
-              />
+              <CapiStatusToggleSwitch />
             </FormLayout>
           </Card>
         </Layout.AnnotatedSection>
 
         <Layout.AnnotatedSection
-          id="conversion-api"
-          title="Conversion API (IOS 14+ Solution)"
-          description="Enter your pixel ID here"
+          id="page selection"
+          title="Page Selection"
+          description="Choose page templates you want to integrate this pixel"
         >
           <Card>
             <FormLayout>
               <InlineStack align="start" gap="100">
                 <RadioButton
                   label="All Pages"
-                  checked={value === "all pages"}
+                  checked={selectPagesChecked === "all pages"}
                   id="all pages"
                   name="select-pages"
-                  onChange={handleChange}
+                  onChange={handleSelectPagesChecked}
                 />
                 <RadioButton
                   label="Specific Pages"
                   id="specific pages"
                   name="select-pages"
-                  checked={value === "specific pages"}
-                  onChange={handleChange}
+                  checked={selectPagesChecked === "specific pages"}
+                  onChange={handleSelectPagesChecked}
                 />
               </InlineStack>
             </FormLayout>
             {/* page selection checkboxes */}
 
-            <div className="mt-4 flex gap-2 flex-wrap">
-              <Checkbox
-                label="Basic checkbox"
-                checked={checked}
-                onChange={handleCheck}
-              />
-              <Checkbox
-                label="Basic checkbox"
-                checked={checked}
-                onChange={handleCheck}
-              />
-              <Checkbox
-                label="Basic checkbox"
-                checked={checked}
-                onChange={handleCheck}
-              />
-            </div>
+            {showPagesOptions && selectPagesChecked === "specific pages" && (
+              <div className="mt-4 flex gap-2 flex-wrap">
+                <Checkbox
+                  label="Home Page"
+                  checked={selectedPages?.includes("home page")}
+                  onChange={() => handleSelectPageOptions("home page")}
+                />
+                <Checkbox
+                  label="collection Pages"
+                  checked={selectedPages?.includes("collection pages")}
+                  onChange={() => handleSelectPageOptions("collection pages")}
+                />
+                <Checkbox
+                  label="Product Pages"
+                  checked={selectedPages?.includes("product pages")}
+                  onChange={() => handleSelectPageOptions("product pages")}
+                />
+                <Checkbox
+                  label="Cart Pages"
+                  checked={selectedPages?.includes("cart pages")}
+                  onChange={() => handleSelectPageOptions("cart pages")}
+                />
+              </div>
+            )}
           </Card>
         </Layout.AnnotatedSection>
       </Layout>

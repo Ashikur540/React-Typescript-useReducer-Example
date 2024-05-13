@@ -1,4 +1,9 @@
-import { CAPI_STATUS, PIXEL_ID, PIXEL_NAME } from "./actionTypes";
+import {
+  CAPI_STATUS,
+  PIXEL_ID,
+  PIXEL_NAME,
+  SELECTED_PAGES,
+} from "./actionTypes";
 
 export const changePixelName = (pixelName: string) => {
   return {
@@ -14,9 +19,15 @@ export const changePixelID = (id: string) => {
   };
 };
 
-export const changePixelStatus = (status: boolean) => {
+export const changePixelStatus = () => {
   return {
     type: CAPI_STATUS,
-    payload: status,
+  };
+};
+
+export const selectPagesHandler = (pages: string[]) => {
+  return {
+    type: SELECTED_PAGES,
+    payload: pages,
   };
 };

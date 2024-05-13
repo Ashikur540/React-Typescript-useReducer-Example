@@ -6,20 +6,17 @@ import {
 import { Badge } from "@shopify/polaris";
 import { useCallback, useReducer } from "react";
 
-type CapiStatusToggleSwitchProps = {
-  capiActive: boolean;
-  setCapiActive: React.Dispatch<React.SetStateAction<boolean>>;
-};
+// type CapiStatusToggleSwitchProps = {
+//   capiActive: boolean;
+//   setCapiActive: React.Dispatch<React.SetStateAction<boolean>>;
+// };
 
-const CapiStatusToggleSwitch = ({
-  capiActive,
-  setCapiActive,
-}: CapiStatusToggleSwitchProps) => {
-  const { capiStatus } = initialState;
-  const { dispatch } = useReducer(createPixelReducer, initialState);
+const CapiStatusToggleSwitch = () => {
+  const [state, dispatch] = useReducer(createPixelReducer, initialState);
+  const { capiStatus } = state || {};
 
-  const handleToggleCapiStatus = useCallback((value: boolean) => {
-    dispatch(changePixelStatus(value));
+  const handleToggleCapiStatus = useCallback(() => {
+    dispatch(changePixelStatus());
   }, []);
 
   return (
@@ -35,13 +32,13 @@ const CapiStatusToggleSwitch = ({
           className="peer sr-only opacity-0"
           id="toggle"
           onChange={handleToggleCapiStatus}
-          checked={capiActive}
+          checked={capiStatus}
         />
         <span className="sr-only">Enable</span>
       </label>
       <Badge
-        tone={capiActive ? "success" : "attention"}
-      >{`${capiActive}`}</Badge>
+        tone={capiStatus ? "success" : "attention"}
+      >{`${capiStatus}`}</Badge>
     </div>
   );
 };

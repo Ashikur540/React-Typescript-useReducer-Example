@@ -74,7 +74,7 @@ const tabsData = [
   },
 
   {
-    id: "id6",
+    id: "id7",
     href: "/help",
     content: (
       <InlineStack gap="100">
@@ -95,7 +95,7 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    navigate(tabsData[selected].href);
+    navigate(tabsData[selected]?.href);
   }, [selected]);
 
   return (
