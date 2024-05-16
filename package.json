@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@shopify/polaris": "^13.3.0",
+    "@shopify/react-form": "^2.5.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.4",
     "react-router-dom": "^6.23.0"
   },
   "devDependencies": {
