@@ -10,35 +10,34 @@ import {
   RadioButton,
   TextField,
 } from "@shopify/polaris";
-import { useCallback, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 
 import CapiStatusToggleSwitch from "@/components/ui/CapiStatusToggleSwitch";
 
-import { selectPagesHandler } from "@/features/create pixel/actions";
+import {
+  addNewPixel,
+  selectPagesHandler,
+} from "@/features/create pixel/actions";
 import {
   createPixelReducer,
   initialState,
 } from "@/features/create pixel/createPixelReducer";
 
+import { PixelInfo } from "@/types/createPixel.types";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const CreatePixel = () => {
   const [state, dispatch] = useReducer(createPixelReducer, initialState);
-  const { selectedPages } = state || {};
 
+  const { selectedPages, pixelsList } = state || {};
+  const navigate = useNavigate();
   const handleSelectPageOptions = useCallback((newValue: string) => {
     dispatch(selectPagesHandler(newValue));
   }, []);
 
-  type PixelInfo = {
-    pixelName: string;
-    pixelID: string;
-    capiStatus: boolean;
-    PageSelectionOption: "allPages" | "specificPages";
-    selectedPages: string[];
-  };
   const handleCreatePixel: SubmitHandler<PixelInfo> = (data: PixelInfo) => {
-    const pixelInfo = {
+    const newPixel = {
       pixelName: data.pixelName,
       pixelID: data.pixelID,
       capiStatus: data.capiStatus,
@@ -47,10 +46,16 @@ const CreatePixel = () => {
           ? selectedPages
           : "allPages",
     };
-    localStorage.setItem("pixee-pixel", JSON.stringify(pixelInfo));
-    reset();
+    console.log("✨ ~ CreatePixel ~ pixelInfo:", newPixel);
+    // Update the state with the new pixel
+    dispatch(addNewPixel(newPixel));
+    localStorage.setItem("pixee-pixel", JSON.stringify(state.pixelsList));
+    navigate("/");
   };
 
+  useEffect(() => {
+    console.log("✨ ~ CreatePixel ~ state", state);
+  }, [state]);
   const {
     handleSubmit,
     control,
@@ -89,10 +94,12 @@ const CreatePixel = () => {
 
   return (
     <Page
+      title="Create New Pixel"
       primaryAction={{
         content: "Save",
         onAction: handleSubmit(handleCreatePixel),
       }}
+      backAction={{ content: "Settings", onAction: () => navigate("/") }}
     >
       {contextBar}
       <Form onSubmit={handleSubmit(handleCreatePixel)}>
@@ -179,7 +186,7 @@ const CreatePixel = () => {
                   <Controller
                     name="PageSelectionOption"
                     control={control}
-                    defaultValue=""
+                    defaultValue="allPages"
                     render={({ field }) => {
                       return (
                         <>
@@ -218,21 +225,15 @@ const CreatePixel = () => {
                       key={page.id}
                       name={page.value}
                       control={control}
-                      defaultValue={[]}
+                      defaultValue={false}
                       render={({ field }) => {
-                        console.log("✨ ~ CreatePixel ~ field:", field);
                         return (
                           <Checkbox
                             key={page.id}
                             value={page.value}
                             label={page.name}
-                            checked={field.value?.includes(page.value)}
-                            onChange={(e) => {
-                              const newValue = e.target.checked
-                                ? [...field?.value, page.value]
-                                : field.value?.filter((p) => p !== page.value);
-                              field.onChange(newValue);
-                            }}
+                            checked={selectedPages?.includes(page.value)}
+                            onChange={() => handleSelectPageOptions(page.value)}
                           />
                         );
                       }}
