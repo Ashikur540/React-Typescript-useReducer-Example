@@ -7,7 +7,7 @@ export type PixelInfo = {
 };
 export type CreatePixelState = {
   selectedPages: string | string[];
-  pixelsList: PixelInfo[];
+  // pixelsList: PixelInfo[];
   pixelName: string;
   pixelID: string;
   capiStatus: boolean;

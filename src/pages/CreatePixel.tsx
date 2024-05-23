@@ -14,44 +14,47 @@ import { useCallback, useEffect, useReducer } from "react";
 
 import CapiStatusToggleSwitch from "@/components/ui/CapiStatusToggleSwitch";
 
-import {
-  addNewPixel,
-  selectPagesHandler,
-} from "@/features/create pixel/actions";
+import { selectPagesHandler } from "@/features/create pixel/actions";
 import {
   createPixelReducer,
   initialState,
 } from "@/features/create pixel/createPixelReducer";
 
+import { usePixelContext } from "@/contexts/FBPixelProvider";
 import { PixelInfo } from "@/types/createPixel.types";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 const CreatePixel = () => {
   const [state, dispatch] = useReducer(createPixelReducer, initialState);
-
-  const { selectedPages, pixelsList } = state || {};
+  const { pixelsList, setPixelsList } = usePixelContext();
+  console.log("✨ ~ CreatePixel ~ pixelsList:", pixelsList);
+  const { selectedPages } = state || {};
   const navigate = useNavigate();
   const handleSelectPageOptions = useCallback((newValue: string) => {
     dispatch(selectPagesHandler(newValue));
   }, []);
 
-  const handleCreatePixel: SubmitHandler<PixelInfo> = (data: PixelInfo) => {
-    const newPixel = {
-      pixelName: data.pixelName,
-      pixelID: data.pixelID,
-      capiStatus: data.capiStatus,
-      selectedPages:
-        data.PageSelectionOption === "specificPages"
-          ? selectedPages
-          : "allPages",
-    };
-    console.log("✨ ~ CreatePixel ~ pixelInfo:", newPixel);
-    // Update the state with the new pixel
-    dispatch(addNewPixel(newPixel));
-    localStorage.setItem("pixee-pixel", JSON.stringify(state.pixelsList));
-    navigate("/");
-  };
+  const handleCreatePixelSubmit = useCallback<SubmitHandler<PixelInfo>>(
+    (data: PixelInfo) => {
+      const newPixel = {
+        pixelName: data.pixelName,
+        pixelID: data.pixelID,
+        capiStatus: data.capiStatus,
+        selectedPages:
+          data.PageSelectionOption === "specificPages"
+            ? selectedPages
+            : "allPages",
+      };
+      console.log("✨ ~ CreatePixel ~ newPixel:", newPixel);
+      setPixelsList([...pixelsList, newPixel]);
+      // dispatch(addNewPixel(newPixel));
+      console.log("✨ ~ handleCreatePixelSubmit ~ pixelist", pixelsList);
+      localStorage.setItem("pixee-pixel", JSON.stringify(pixelsList));
+      navigate("/");
+    },
+    [navigate, pixelsList, selectedPages, setPixelsList]
+  );
 
   useEffect(() => {
     console.log("✨ ~ CreatePixel ~ state", state);
@@ -77,7 +80,7 @@ const CreatePixel = () => {
     <ContextualSaveBar
       message="Unsaved product"
       saveAction={{
-        onAction: handleSubmit(handleCreatePixel),
+        onAction: handleSubmit(handleCreatePixelSubmit),
       }}
       discardAction={{
         onAction: () => reset(),
@@ -97,12 +100,12 @@ const CreatePixel = () => {
       title="Create New Pixel"
       primaryAction={{
         content: "Save",
-        onAction: handleSubmit(handleCreatePixel),
+        onAction: handleSubmit(handleCreatePixelSubmit),
       }}
       backAction={{ content: "Settings", onAction: () => navigate("/") }}
     >
       {contextBar}
-      <Form onSubmit={handleSubmit(handleCreatePixel)}>
+      <Form onSubmit={handleSubmit(handleCreatePixelSubmit)}>
         <Layout sectioned>
           <Layout.AnnotatedSection
             id="pixel-name"

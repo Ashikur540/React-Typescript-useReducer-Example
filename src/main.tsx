@@ -4,10 +4,13 @@ import enTranslations from "@shopify/polaris/locales/en.json";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
+import { FBPixelProvider } from "./contexts/FBPixelProvider.tsx";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <AppProvider i18n={enTranslations}>
-    <App />
+    <FBPixelProvider>
+      <App />
+    </FBPixelProvider>
   </AppProvider>
 );

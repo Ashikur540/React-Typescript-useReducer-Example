@@ -1,5 +1,5 @@
 import { PixelInfo } from "@/types/createPixel.types";
-import { ADD_PIXEL, SELECTED_PAGES } from "./actionTypes";
+import { ADD_NEW_PIXEL, SELECTED_PAGES } from "./actionTypes";
 
 // export const changePixelName = (pixelName: string) => {
 //   return {
@@ -29,8 +29,9 @@ export const selectPagesHandler = (pages: string) => {
 };
 
 export const addNewPixel = (pixel: PixelInfo) => {
+  console.log("✨ ~ addNewPixel ~ PixelInfo:", pixel);
   return {
-    type: ADD_PIXEL,
+    type: ADD_NEW_PIXEL,
     payload: pixel,
   };
 };
