@@ -1,15 +1,12 @@
 export type PixelInfo = {
+  _id: string;
   pixelName: string;
   pixelID: string;
   capiStatus: boolean;
-  selectedPages: string | string[];
-  PageSelectionOption?: string;
+  userSelectedPages: string[];
+  pageSelectionOption?: string;
+  currentPixelStatus: boolean;
 };
 export type CreatePixelState = {
-  selectedPages: string | string[];
-  // pixelsList: PixelInfo[];
-  pixelName: string;
-  pixelID: string;
-  capiStatus: boolean;
-  PageSelectionOption: string;
+  createdPixelsList: PixelInfo[];
 };

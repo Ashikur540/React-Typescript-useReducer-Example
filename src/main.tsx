@@ -4,6 +4,7 @@ import enTranslations from "@shopify/polaris/locales/en.json";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
+
 import { FBPixelProvider } from "./contexts/FBPixelProvider.tsx";
 import "./index.css";
 

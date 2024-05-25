@@ -1,37 +1,37 @@
 import { PixelInfo } from "@/types/createPixel.types";
-import { ADD_NEW_PIXEL, SELECTED_PAGES } from "./actionTypes";
-
-// export const changePixelName = (pixelName: string) => {
-//   return {
-//     type: PIXEL_NAME,
-//     payload: pixelName,
-//   };
-// };
-
-// export const changePixelID = (id: string) => {
-//   return {
-//     type: PIXEL_ID,
-//     payload: id,
-//   };
-// };
-
-// export const changePixelStatus = () => {
-//   return {
-//     type: CAPI_STATUS,
-//   };
-// };
-
-export const selectPagesHandler = (pages: string) => {
-  return {
-    type: SELECTED_PAGES,
-    payload: pages,
-  };
-};
+import {
+  ADD_NEW_PIXEL,
+  DELETE_PIXEL,
+  EDIT_PIXEL,
+  TOGGLE_PIXEL_STATUS,
+} from "./actionTypes";
 
 export const addNewPixel = (pixel: PixelInfo) => {
-  console.log("✨ ~ addNewPixel ~ PixelInfo:", pixel);
+  // console.log("✨ ~ addNewPixel ~ pixel:", pixel);
   return {
     type: ADD_NEW_PIXEL,
     payload: pixel,
+  };
+};
+export const togglePixelStatus = (id: string) => {
+  // console.log("✨ ~ togglePixelStatus ~ id:", id);
+  return {
+    type: TOGGLE_PIXEL_STATUS,
+    payload: id,
+  };
+};
+
+export const editPixel = (pixel: PixelInfo) => {
+  // console.log("✨ ~ pixel :", pixel);
+  return {
+    type: EDIT_PIXEL,
+    payload: pixel,
+  };
+};
+export const deletePixel = (id: string) => {
+  // console.log("✨ ~ pixel :", pixel);
+  return {
+    type: DELETE_PIXEL,
+    payload: id,
   };
 };

@@ -1,33 +1,54 @@
-import { PixelInfo } from "@/types/createPixel.types";
-import React, { ReactNode, createContext, useContext, useState } from "react";
+import {
+  CreatePixelAction,
+  createPixelInitialState,
+  createPixelReducer,
+} from "@/features/create pixel/createPixelReducer";
+import { CreatePixelState, PixelInfo } from "@/types/createPixel.types";
+import {
+  Dispatch,
+  ReactNode,
+  createContext,
+  useContext,
+  useReducer,
+} from "react";
 
 interface PixelContextType {
-  pixelsList: PixelInfo[];
-  setPixelsList: React.Dispatch<React.SetStateAction<PixelInfo[]>>;
+  createPixelState: CreatePixelState;
+  dispatch: Dispatch<CreatePixelAction<PixelInfo | unknown>>;
 }
 
-const PixelContext = createContext<PixelContextType | undefined>(undefined);
+const PixelStateContext = createContext<PixelContextType | undefined>(
+  undefined
+);
 
 interface FBPixelProviderProps {
   children: ReactNode;
 }
 
-export const FBPixelProvider = ({ children }: FBPixelProviderProps) => {
-  const [pixelsList, setPixelsList] = useState<PixelInfo[]>(
-    JSON.parse(localStorage.getItem("pixee-pixel") ?? "[]")
+export const FBPixelProvider: React.FC<FBPixelProviderProps> = ({
+  children,
+}) => {
+  const [createPixelState, dispatch] = useReducer(
+    createPixelReducer,
+    createPixelInitialState
   );
 
   return (
-    <PixelContext.Provider value={{ pixelsList, setPixelsList }}>
+    <PixelStateContext.Provider
+      value={{
+        createPixelState,
+        dispatch,
+      }}
+    >
       {children}
-    </PixelContext.Provider>
+    </PixelStateContext.Provider>
   );
 };
 
-export const usePixelContext = () => {
-  const context = useContext(PixelContext);
+export const usePixelStateContext = (): PixelContextType => {
+  const context = useContext(PixelStateContext);
   if (!context) {
-    throw new Error("usePixelContext must be used within a PixelProvider");
+    throw new Error("usePixelStateContext must be used within a PixelProvider");
   }
   return context;
 };

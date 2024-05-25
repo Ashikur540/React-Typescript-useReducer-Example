@@ -1,8 +1,11 @@
+import CapiStatusToggleSwitch from "@/components/ui/CapiStatusToggleSwitch";
+import { usePixelStateContext } from "@/contexts/FBPixelProvider";
+import { editPixel } from "@/features/create pixel/actions";
+import { PixelInfo } from "@/types/createPixel.types";
 import {
   Card,
   ChoiceList,
   ContextualSaveBar,
-  Form,
   FormLayout,
   InlineStack,
   Layout,
@@ -10,42 +13,48 @@ import {
   RadioButton,
   TextField,
 } from "@shopify/polaris";
-import { useCallback, useEffect } from "react";
 
-import CapiStatusToggleSwitch from "@/components/ui/CapiStatusToggleSwitch";
-
-import { usePixelStateContext } from "@/contexts/FBPixelProvider";
-import { addNewPixel } from "@/features/create pixel/actions";
-import { PixelInfo } from "@/types/createPixel.types";
+import { useCallback } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate, useParams } from "react-router-dom";
 
-const CreatePixel = () => {
+const EditPixel = () => {
+  const { id } = useParams();
   const { createPixelState, dispatch } = usePixelStateContext() || {};
-  const navigate = useNavigate();
+  const currentPixel = createPixelState.createdPixelsList?.find(
+    (pixel) => pixel.pixelID === id
+  );
 
-  useEffect(() => {
-    console.log("✨ ~ CreatePixel ~ createdPixelsList", createPixelState);
-  }, [createPixelState]);
+  const {
+    _id,
+    pixelName,
+    pixelID,
+    capiStatus,
+    userSelectedPages,
+    pageSelectionOption,
+  } = currentPixel || {};
+
   const { handleSubmit, control, reset, watch, formState } = useForm<PixelInfo>(
     {
       defaultValues: {
-        pixelName: "",
-        pixelID: "",
-        capiStatus: false,
-        pageSelectionOption: "allPages",
-        userSelectedPages: [],
+        pixelName: pixelName || "",
+        pixelID: pixelID || "",
+        capiStatus: capiStatus || false,
+        pageSelectionOption: userSelectedPages?.includes("allPages")
+          ? "allPages"
+          : "specificPages",
+        userSelectedPages: userSelectedPages || [],
       },
     }
   );
 
   const { errors, isDirty } = formState;
-  const pageSelectionOption = watch("pageSelectionOption");
-
+  const pageSelectionOptionValue = watch("pageSelectionOption");
+  const navigate = useNavigate();
   const handleCreatePixelSubmit = useCallback<SubmitHandler<PixelInfo>>(
     (data: PixelInfo) => {
-      const newPixel: PixelInfo = {
-        _id: new Date().getTime().toString(),
+      const updatedPixel: PixelInfo = {
+        _id,
         pixelName: data.pixelName,
         pixelID: data.pixelID,
         capiStatus: data.capiStatus,
@@ -53,14 +62,12 @@ const CreatePixel = () => {
           data.pageSelectionOption === "specificPages"
             ? data.userSelectedPages
             : [data.pageSelectionOption],
-        currentPixelStatus: true,
       };
-      // console.log("✨ ~ CreatePixel ~ newPixel:", newPixel);
-      dispatch(addNewPixel(newPixel));
-      reset();
+      console.log("✨ ~ EditPixel ~ data:", updatedPixel);
+      dispatch(editPixel(updatedPixel));
       navigate("/");
     },
-    [dispatch, navigate, reset]
+    [_id, dispatch, navigate]
   );
   const contextBar = isDirty && (
     <ContextualSaveBar
@@ -84,14 +91,9 @@ const CreatePixel = () => {
     { label: "product pages", value: "productPages" },
     { label: "cart pages", value: "cartPages" },
   ];
-
   return (
     <Page
-      title="Create New Pixel"
-      primaryAction={{
-        content: "Save",
-        onAction: handleSubmit(handleCreatePixelSubmit),
-      }}
+      title="Edit Pixel"
       backAction={{ content: "Settings", onAction: () => navigate("/") }}
     >
       {contextBar}
@@ -107,7 +109,7 @@ const CreatePixel = () => {
                 <Controller
                   control={control}
                   name="pixelName"
-                  defaultValue=""
+                  defaultValue={pixelName}
                   rules={{ required: "Pixel Name is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
@@ -177,7 +179,7 @@ const CreatePixel = () => {
                   <Controller
                     name="pageSelectionOption"
                     control={control}
-                    defaultValue="allPages"
+                    // defaultValue={pageSelectionOptionValue}
                     render={({ field }) => {
                       return (
                         <>
@@ -203,7 +205,7 @@ const CreatePixel = () => {
               </FormLayout>
 
               {/* page selection checkboxes */}
-              {pageSelectionOption === "specificPages" && (
+              {pageSelectionOptionValue === "specificPages" && (
                 <Controller
                   name="userSelectedPages"
                   control={control}
@@ -227,4 +229,4 @@ const CreatePixel = () => {
   );
 };
 
-export default CreatePixel;
+export default EditPixel;

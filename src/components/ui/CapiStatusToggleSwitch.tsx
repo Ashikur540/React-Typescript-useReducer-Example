@@ -1,8 +1,15 @@
 import { Badge } from "@shopify/polaris";
+import { ChangeEventHandler } from "react";
 
-const CapiStatusToggleSwitch = ({ field }: object) => {
-  const { onChange, value } = field;
+interface ICapiStatusSwitchProps {
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  value: boolean;
+}
 
+const CapiStatusToggleSwitch = ({
+  onChange,
+  value,
+}: ICapiStatusSwitchProps) => {
   return (
     <div className="flex gap-2 items-center">
       <label

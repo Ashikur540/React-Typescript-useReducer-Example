@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import CreatePixel from "@/pages/CreatePixel";
 import Dashboard from "@/pages/Dashboard";
+import EditPixel from "@/pages/EditPixel";
 import ErrorPage from "@/pages/ErrorPage";
 import EventTrackingSetup from "@/pages/EventTrackingSetup";
 import GdprBanner from "@/pages/GdprBanner";
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "/create-pixel",
         element: <CreatePixel />,
+      },
+      {
+        path: "/pixel/:id",
+        element: <EditPixel />,
       },
     ],
   },
