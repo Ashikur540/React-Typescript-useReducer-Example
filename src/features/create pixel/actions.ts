@@ -3,6 +3,8 @@ import {
   ADD_NEW_PIXEL,
   DELETE_PIXEL,
   EDIT_PIXEL,
+  TOGGLE_CREATE_SUCCESS_TOAST,
+  TOGGLE_DELETE_SUCCESS_TOAST,
   TOGGLE_PIXEL_STATUS,
 } from "./actionTypes";
 
@@ -28,10 +30,23 @@ export const editPixel = (pixel: PixelInfo) => {
     payload: pixel,
   };
 };
+
 export const deletePixel = (id: string) => {
   // console.log("✨ ~ pixel :", pixel);
   return {
     type: DELETE_PIXEL,
     payload: id,
+  };
+};
+
+export const toggleCreatePixelSuccessToast = () => {
+  return {
+    type: TOGGLE_CREATE_SUCCESS_TOAST,
+  };
+};
+
+export const toggleDeletePixelSuccessToast = () => {
+  return {
+    type: TOGGLE_DELETE_SUCCESS_TOAST,
   };
 };

@@ -9,4 +9,6 @@ export type PixelInfo = {
 };
 export type CreatePixelState = {
   createdPixelsList: PixelInfo[];
+  isActiveCreatePixelSuccessToast: boolean;
+  isActiveDeletePixelSuccessToast: boolean;
 };

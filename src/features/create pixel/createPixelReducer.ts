@@ -3,16 +3,20 @@ import {
   ADD_NEW_PIXEL,
   DELETE_PIXEL,
   EDIT_PIXEL,
+  TOGGLE_CREATE_SUCCESS_TOAST,
+  TOGGLE_DELETE_SUCCESS_TOAST,
   TOGGLE_PIXEL_STATUS,
 } from "./actionTypes";
 
 export type CreatePixelAction<T> = {
   type: string;
-  payload: T;
+  payload?: T;
 };
 
 export const createPixelInitialState: CreatePixelState = {
   createdPixelsList: JSON.parse(localStorage.getItem("pixee-pixel") || "[]"),
+  isActiveCreatePixelSuccessToast: false,
+  isActiveDeletePixelSuccessToast: false,
 };
 
 export const createPixelReducer = <T>(
@@ -48,24 +52,27 @@ export const createPixelReducer = <T>(
     case EDIT_PIXEL: {
       const { payload } = action as CreatePixelAction<PixelInfo>;
       console.log("✨ ~ payload:", payload);
-      const updatedPixelsList = state.createdPixelsList?.map((pixel) => {
-        if (pixel._id === payload._id) {
-          pixel["pixelName"] = payload["pixelName"];
-          pixel["capiStatus"] = payload["capiStatus"];
-          pixel["pixelID"] = payload["pixelID"];
-          pixel["userSelectedPages"] = payload["userSelectedPages"];
-        }
-        return pixel;
-      });
-      console.log(
-        "✨ ~ updatedPixelsList ~ updatedPixelsList:",
-        updatedPixelsList
-      );
-      localStorage.setItem("pixee-pixel", JSON.stringify(updatedPixelsList));
-      return {
-        ...state,
-        createdPixelsList: updatedPixelsList,
-      };
+      if (payload) {
+        const updatedPixelsList = state.createdPixelsList?.map((pixel) => {
+          if (pixel._id === payload._id) {
+            pixel["pixelName"] = payload["pixelName"];
+            pixel["capiStatus"] = payload["capiStatus"];
+            pixel["pixelID"] = payload["pixelID"];
+            pixel["userSelectedPages"] = payload["userSelectedPages"];
+          }
+          return pixel;
+        });
+        console.log(
+          "✨ ~ updatedPixelsList ~ updatedPixelsList:",
+          updatedPixelsList
+        );
+        localStorage.setItem("pixee-pixel", JSON.stringify(updatedPixelsList));
+        return {
+          ...state,
+          createdPixelsList: updatedPixelsList,
+        };
+      }
+      break;
     }
 
     case DELETE_PIXEL: {
@@ -79,6 +86,18 @@ export const createPixelReducer = <T>(
       };
     }
 
+    case TOGGLE_CREATE_SUCCESS_TOAST: {
+      return {
+        ...state,
+        isActiveCreatePixelSuccessToast: !state.isActiveCreatePixelSuccessToast,
+      };
+    }
+    case TOGGLE_DELETE_SUCCESS_TOAST: {
+      return {
+        ...state,
+        isActiveDeletePixelSuccessToast: !state.isActiveDeletePixelSuccessToast,
+      };
+    }
     default:
       return state;
   }

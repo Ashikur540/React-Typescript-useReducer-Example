@@ -1,6 +1,7 @@
 import { usePixelStateContext } from "@/contexts/FBPixelProvider";
 import {
   deletePixel,
+  toggleDeletePixelSuccessToast,
   togglePixelStatus,
 } from "@/features/create pixel/actions";
 import { PixelInfo } from "@/types/createPixel.types";
@@ -12,14 +13,19 @@ import {
   DataTable,
   Page,
 } from "@shopify/polaris";
+import { useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import EmptyStatePlaceholder from "./ui/EmptyStatePlaceholder";
+import DeletePixelModal from "./ui/modals/DeletePixelModal";
 
 const PixelsList = () => {
   const navigate = useNavigate();
   const { createPixelState, dispatch } = usePixelStateContext() || {};
   const { createdPixelsList } = createPixelState || {};
-  console.log("✨ ~ PixelsList ~ createdPixelsList:", createdPixelsList);
+  console.log(
+    "✨ ~ file: PixelsList.tsx:24 ~ PixelsList ~ createPixelState:",
+    createPixelState
+  );
 
   const actionButtons = (pixel: PixelInfo) => (
     <ButtonGroup>
@@ -34,13 +40,14 @@ const PixelsList = () => {
           Edit
         </Button>
       </Link>
-      <Button
+      {/* <Button
         variant="secondary"
         tone="critical"
-        onClick={() => dispatch(deletePixel(pixel?.pixelID))}
+        onClick={() => handleDeletePixel(pixel?.pixelID)}
       >
         Delete
-      </Button>
+      </Button> */}
+      <DeletePixelModal id={pixel?.pixelID} />
     </ButtonGroup>
   );
 

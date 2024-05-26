@@ -15,7 +15,10 @@ import { useCallback, useEffect } from "react";
 import CapiStatusToggleSwitch from "@/components/ui/CapiStatusToggleSwitch";
 
 import { usePixelStateContext } from "@/contexts/FBPixelProvider";
-import { addNewPixel } from "@/features/create pixel/actions";
+import {
+  addNewPixel,
+  toggleCreatePixelSuccessToast,
+} from "@/features/create pixel/actions";
 import { PixelInfo } from "@/types/createPixel.types";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -57,6 +60,7 @@ const CreatePixel = () => {
       };
       // console.log("✨ ~ CreatePixel ~ newPixel:", newPixel);
       dispatch(addNewPixel(newPixel));
+      dispatch(toggleCreatePixelSuccessToast());
       reset();
       navigate("/");
     },
